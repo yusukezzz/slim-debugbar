@@ -3,12 +3,12 @@
     "license": "MIT",
     "keywords": ["slim", "middleware", "debugbar"],
     "require": {
+        "php": ">=5.4.0",
         "slim/slim": "2.*",
         "maximebf/debugbar": ">=1.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.*",
-        "mockery/mockery": "dev-master@dev"
+        "phpunit/phpunit": "4.*"
     },
     "suggest": {
         "twig/twig": "DebugBar has data collector for this template",

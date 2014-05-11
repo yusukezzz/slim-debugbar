@@ -95,7 +95,7 @@ class DebugBar extends Middleware
     public function getDebugHtml()
     {
         $renderer = $this->debugbar->getJavascriptRenderer();
-        return implode("\n", array($this->getCssHtml(), $this->getJsHtml(), $renderer->render()));
+        return implode("\n", [$this->getCssHtml(), $this->getJsHtml(), $renderer->render()]);
     }
 
     public function getCssHtml()
@@ -117,8 +117,7 @@ class DebugBar extends Middleware
             $files = explode('?', $file);
             $file = reset($files);
             $path = $renderer->getBasePath() . '/vendor/font-awesome/fonts/' . $file;
-            $finfo = new \finfo(FILEINFO_MIME);
-            $this->app->response->header('Content-Type', $finfo->file($path));
+            $this->app->response->header('Content-Type', (new \finfo(FILEINFO_MIME))->file($path));
             echo file_get_contents($path);
         });
         $this->app->get('/_debugbar/resources/:file', function($file) use ($renderer)
