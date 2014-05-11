@@ -10,5 +10,4 @@ script:
 - phpunit --coverage-text
 notifications:
   slack:
-    secure: InsU9veI7H9Mo2MJDC0ctHsMQ0GEKNYroiPtEJZ3PZEZgnnxlSGJt081ema7wBrrI3DTGdPD4BvxX4nF5jFZDN7N8wV1O3JDnuFtRla+Tl/4pmW9OPZUaUpjMKYVT1RVCgS/HAzn8+kIulEAAl57FTZo6MY+wQungt6KJlsGhrE=
-
+    secure: PEuQ6Hfd/fimTNBW+H88yBDB+3sLx25HD8wnTZmJB37gHQ2D3ywDQudx/9A/QPICvtLJQ/G/eFdqKiovZEDG64ylgj6gAkioixrqmSyRLlcHoQ7ImZCbozQYk4f3sTXkbn+6MvDycEx5a7CuHwhMeDt7so9s0jNx5ZTPJpLWJNk=
