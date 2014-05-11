@@ -117,7 +117,8 @@ class DebugBar extends Middleware
             $files = explode('?', $file);
             $file = reset($files);
             $path = $renderer->getBasePath() . '/vendor/font-awesome/fonts/' . $file;
-            $this->app->response->header('Content-Type', (new \finfo(FILEINFO_MIME))->file($path));
+            $finfo = new \finfo(FILEINFO_MIME);
+            $this->app->response->header('Content-Type', $finfo->file($path));
             echo file_get_contents($path);
         });
         $this->app->get('/_debugbar/resources/:file', function($file) use ($renderer)
