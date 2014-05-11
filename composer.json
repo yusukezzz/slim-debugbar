@@ -1,0 +1,24 @@
+{
+    "name": "yusukezzz/slim_debugbar",
+    "license": "MIT",
+    "keywords": ["slim", "middleware", "debugbar"],
+    "require": {
+        "slim/slim": "2.*",
+        "maximebf/debugbar": ">=1.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.*",
+        "mockery/mockery": "dev-master@dev"
+    },
+    "suggest": {
+        "twig/twig": "DebugBar has data collector for this template",
+        "slim/views": "Smarty and Twig custom view classes for Slim framework"
+    },
+    "autoload": {
+        "psr-0": {
+            "Slim\\Middleware\\": "src/",
+            "DebugBar\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
