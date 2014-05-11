@@ -95,7 +95,7 @@ class DebugBar extends Middleware
     public function getDebugHtml()
     {
         $renderer = $this->debugbar->getJavascriptRenderer();
-        return implode("\n", [$this->getCssHtml(), $this->getJsHtml(), $renderer->render()]);
+        return implode("\n", array($this->getCssHtml(), $this->getJsHtml(), $renderer->render()));
     }
 
     public function getCssHtml()
