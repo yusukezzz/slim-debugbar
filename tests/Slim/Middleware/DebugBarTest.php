@@ -62,49 +62,37 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_fonts_asset_route()
     {
-        \Slim\Environment::mock(array(
-            'REQUEST_METHOD' => 'HEAD', // ignore console output
-            'PATH_INFO' => '/_debugbar/fonts/fontawesome-webfont.woff?v=4.0.3',
-        ));
-        $slim = new \Slim\Slim();
-        $slim->add($this->debugbar);
-        $slim->run();
+        $slim = $this->dispatch('/_debugbar/fonts/fontawesome-webfont.woff?v=4.0.3');
         $this->assertSame('application/octet-stream; charset=binary', $slim->response->header('Content-Type'));
     }
 
     public function test_css_asset_route()
     {
-        \Slim\Environment::mock(array(
-            'REQUEST_METHOD' => 'HEAD', // ignore console output
-            'PATH_INFO' => '/_debugbar/resources/dump.css',
-        ));
-        $slim = new \Slim\Slim();
-        $slim->add($this->debugbar);
-        $slim->run();
+        $slim = $this->dispatch('/_debugbar/resources/dump.css');
         $this->assertSame('text/css', $slim->response->header('Content-Type'));
     }
 
     public function test_js_asset_route()
     {
-        \Slim\Environment::mock(array(
-            'REQUEST_METHOD' => 'HEAD', // ignore console output
-            'PATH_INFO' => '/_debugbar/resources/dump.js',
-        ));
-        $slim = new \Slim\Slim();
-        $slim->add($this->debugbar);
-        $slim->run();
+        $slim = $this->dispatch('/_debugbar/resources/dump.js');
         $this->assertSame('text/javascript', $slim->response->header('Content-Type'));
     }
 
     public function test_image_asset_route()
     {
+        $slim = $this->dispatch('/_debugbar/resources/icons.png');
+        $this->assertSame('image/png', $slim->response->header('Content-Type'));
+    }
+
+    public function dispatch($path)
+    {
         \Slim\Environment::mock(array(
-            'REQUEST_METHOD' => 'HEAD', // ignore console output
-            'PATH_INFO' => '/_debugbar/resources/icons.png',
-        ));
+                'REQUEST_METHOD' => 'HEAD', // ignore console output
+                'PATH_INFO' => $path,
+            ));
         $slim = new \Slim\Slim();
         $slim->add($this->debugbar);
         $slim->run();
-        $this->assertSame('image/png', $slim->response->header('Content-Type'));
+        return $slim;
     }
 }
