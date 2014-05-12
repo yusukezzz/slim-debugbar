@@ -54,10 +54,6 @@ class DebugBar extends Middleware
             return;
         }
 
-        // collect latest settings
-        $setting = $this->app->container['settings'];
-        $this->debugbar->addCollector(new ConfigCollector($setting));
-
         $html = $this->app->response->body();
         $this->app->response->body($this->modifyResponse($html));
     }
