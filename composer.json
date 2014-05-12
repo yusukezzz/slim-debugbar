@@ -19,6 +19,7 @@
     "autoload": {
         "psr-0": {
             "Slim\\Middleware\\": "src/",
+            "Slim\\Views\\": "src/",
             "DebugBar\\": "src/"
         }
     },
