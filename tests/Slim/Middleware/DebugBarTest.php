@@ -47,7 +47,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = 'hoge';
         $res = $this->debugbar->modifyResponse($html);
-        $pattern = '#' . $html . quotemeta($this->debugbar->getDebugHtml()).'#';
+        $pattern = '#' . $html . preg_quote($this->debugbar->getDebugHtml(), '#').'#';
         $this->assertRegExp($pattern, $res);
     }
 
@@ -56,7 +56,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = '</body>';
         $res = $this->debugbar->modifyResponse($html);
-        $pattern = '#' . quotemeta($this->debugbar->getDebugHtml()) . $html.'#';
+        $pattern = '#' . preg_quote($this->debugbar->getDebugHtml(), '#') . $html.'#';
         $this->assertRegExp($pattern, $res);
     }
 
