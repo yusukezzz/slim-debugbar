@@ -7,6 +7,7 @@ use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\SlimInfoCollector;
 use DebugBar\DataCollector\SlimLogCollector;
+use DebugBar\DataCollector\SlimRouteCollector;
 use DebugBar\DataCollector\SlimViewCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 
@@ -24,6 +25,8 @@ class SlimDebugBar extends DebugBar
             // collect view variables
             $data = $this->prepareRenderData($slim->view->all());
             $this->addCollector(new SlimViewCollector($data));
+            // collect route infomation
+            $this->addCollector(new SlimRouteCollector($slim->router));
         });
 
         $this->addCollector(new PhpInfoCollector());
