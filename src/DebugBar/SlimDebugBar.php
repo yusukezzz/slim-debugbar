@@ -26,7 +26,7 @@ class SlimDebugBar extends DebugBar
             $data = $this->prepareRenderData($slim->view->all());
             $this->addCollector(new SlimViewCollector($data));
             // collect route infomation
-            $this->addCollector(new SlimRouteCollector($slim->router));
+            $this->addCollector(new SlimRouteCollector($slim));
         });
 
         $this->addCollector(new PhpVersionCollector());
