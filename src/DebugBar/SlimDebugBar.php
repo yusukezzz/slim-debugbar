@@ -1,10 +1,9 @@
 <?php namespace DebugBar;
 
-use DebugBar\DataCollector\PhpVersionCollector;
 use Slim\Slim;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\MemoryCollector;
-use DebugBar\DataCollector\PhpInfoCollector;
+use DebugBar\DataCollector\PhpVersionCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\SlimEnvCollector;
 use DebugBar\DataCollector\SlimLogCollector;
