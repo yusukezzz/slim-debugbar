@@ -2,7 +2,7 @@
 
 use Slim\Slim;
 
-class SlimInfoCollector extends DataCollector implements Renderable
+class SlimEnvCollector extends DataCollector implements Renderable
 {
     /**
      * @var \Slim\Slim
@@ -24,7 +24,7 @@ class SlimInfoCollector extends DataCollector implements Renderable
 
     public function getName()
     {
-        return 'slim_info';
+        return 'slim';
     }
 
     public function getWidgets()
@@ -33,13 +33,13 @@ class SlimInfoCollector extends DataCollector implements Renderable
             'version' => [
                 'icon' => 'info',
                 'tooltip' => 'Slim version',
-                'map' => 'slim_info.version',
+                'map' => 'slim.version',
                 'default' => '',
             ],
             'mode' => [
                 'icon' => 'desktop',
                 'tooltip' => 'Slim mode',
-                'map' => 'slim_info.mode',
+                'map' => 'slim.mode',
                 'default' => '',
             ]
         ];

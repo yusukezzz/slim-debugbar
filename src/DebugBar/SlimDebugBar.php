@@ -5,7 +5,7 @@ use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\RequestDataCollector;
-use DebugBar\DataCollector\SlimInfoCollector;
+use DebugBar\DataCollector\SlimEnvCollector;
 use DebugBar\DataCollector\SlimLogCollector;
 use DebugBar\DataCollector\SlimRouteCollector;
 use DebugBar\DataCollector\SlimViewCollector;
@@ -16,7 +16,7 @@ class SlimDebugBar extends DebugBar
     public function __construct(Slim $slim)
     {
         $this->addCollector(new SlimLogCollector($slim));
-        $this->addCollector(new SlimInfoCollector($slim));
+        $this->addCollector(new SlimEnvCollector($slim));
         $slim->hook('slim.after.router', function() use ($slim)
         {
             // collect latest settings
