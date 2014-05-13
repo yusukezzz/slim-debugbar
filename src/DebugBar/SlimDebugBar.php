@@ -21,9 +21,7 @@ class SlimDebugBar extends DebugBar
             // collect latest settings
             $setting = $this->prepareRenderData($slim->container['settings']);
             $this->addCollector(new ConfigCollector($setting));
-        });
-        $slim->hook('slim.after.router', function() use ($slim)
-        {
+            // collect view variables
             $data = $this->prepareRenderData($slim->view->all());
             $this->addCollector(new SlimViewCollector($data));
         });
@@ -39,11 +37,7 @@ class SlimDebugBar extends DebugBar
         $tmp = [];
         foreach ($data as $key => $val) {
             if (is_object($val)) {
-                if (method_exists($val, 'toArray')) {
-                    $val = $val->toArray();
-                } else {
-                    $val = "Object (". get_class($val) .")";
-                }
+                $val = "Object (". get_class($val) .")";
             }
             $tmp[$key] = $val;
         }
