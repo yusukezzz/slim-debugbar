@@ -1,5 +1,6 @@
 <?php namespace DebugBar;
 
+use DebugBar\DataCollector\SlimResponseCollector;
 use Slim\Slim;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\MemoryCollector;
@@ -19,19 +20,21 @@ class SlimDebugBar extends DebugBar
         $this->addCollector(new SlimEnvCollector($slim));
         $slim->hook('slim.after.router', function() use ($slim)
         {
+            // collect response information
+            $this->addCollector(new SlimResponseCollector($slim->response));
             // collect latest settings
             $setting = $this->prepareRenderData($slim->container['settings']);
             $this->addCollector(new ConfigCollector($setting));
             // collect view variables
             $data = $this->prepareRenderData($slim->view->all());
             $this->addCollector(new SlimViewCollector($data));
-            // collect route infomation
+            // collect route information
             $this->addCollector(new SlimRouteCollector($slim));
         });
 
         $this->addCollector(new PhpVersionCollector());
-        $this->addCollector(new RequestDataCollector());
         $this->addCollector(new TimeDataCollector());
+        $this->addCollector(new RequestDataCollector());
         $this->addCollector(new MemoryCollector());
     }
 
