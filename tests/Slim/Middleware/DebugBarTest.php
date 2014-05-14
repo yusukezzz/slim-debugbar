@@ -101,9 +101,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
      */
     public function getDebugBarMock($isSessionStarted)
     {
-        $httpDriver = $this->getMockBuilder('\\DebugBar\\PhpHttpDriver')->setMethods(['isSessionStarted'])->getMock();
+        $httpDriver = $this->getMock('\\DebugBar\\PhpHttpDriver');
         $httpDriver->expects($this->any())->method('isSessionStarted')->willReturn($isSessionStarted);
-        $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')->getMock();
+        $debugbar = $this->getMock('\\DebugBar\\DebugBar');
         $debugbar->expects($this->any())->method('getHttpDriver')->willReturn($httpDriver);
         return $debugbar;
     }
