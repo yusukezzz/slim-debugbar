@@ -39,7 +39,24 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
     public function test_isModifiable_return_false_when_redirect()
     {
         $this->slim->response->redirect('hoge');
+        $httpDriver = $this->getMockBuilder('\\DebugBar\\PhpHttpDriver')->setMethods(['isSessionStarted'])->getMock();
+        $httpDriver->expects($this->any())->method('isSessionStarted')->willReturn(false);
+        $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')->getMock();
+        $debugbar->expects($this->any())->method('getHttpDriver')->willReturn($httpDriver);
+        $this->debugbar->setDebugBar($debugbar);
         $this->assertFalse($this->debugbar->isModifiable());
+    }
+
+    public function test_isModifiable_call_stackData_when_redirec_and_session_started()
+    {
+      $this->slim->response->redirect('hoge');
+      $httpDriver = $this->getMockBuilder('\\DebugBar\\PhpHttpDriver')->setMethods(['isSessionStarted'])->getMock();
+      $httpDriver->expects($this->any())->method('isSessionStarted')->willReturn(true);
+      $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')->getMock();
+      $debugbar->expects($this->any())->method('getHttpDriver')->willReturn($httpDriver);
+      $debugbar->expects($this->once())->method('stackData');
+      $this->debugbar->setDebugBar($debugbar);
+      $this->assertFalse($this->debugbar->isModifiable());
     }
 
     public function test_modifyResponse_append_end_of_text_when_plain_text()

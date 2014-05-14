@@ -2,6 +2,7 @@
 
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\DataCollectorInterface;
+use DebugBar\HttpDriverInterface;
 use DebugBar\SlimDebugBar;
 use Slim\Middleware;
 
@@ -20,6 +21,16 @@ class DebugBar extends Middleware
      * @var \DebugBar\SlimDebugBar
      */
     protected $debugbar;
+
+    /**
+     * @var HttpDriverInterface
+     */
+    protected $httpDriver;
+
+    public function __construct(HttpDriverInterface $HttpDriver = null)
+    {
+        $this->httpDriver = $HttpDriver;
+    }
 
     /**
      * @param DataCollectorInterface $collector
@@ -46,6 +57,7 @@ class DebugBar extends Middleware
             return new SlimDebugBar($this->app);
         });
         $this->debugbar = $this->app->debugbar;
+        if ( ! is_null($this->httpDriver)) $this->debugbar->setHttpDriver($this->httpDriver);
         $this->setAssetsRoute();
 
         $this->next->call();
@@ -60,12 +72,15 @@ class DebugBar extends Middleware
 
     public function isModifiable()
     {
-        $content_type = $this->app->response->header('Content-Type');
-        if ($content_type !== 'text/html') {
+        if ($this->app->response->isRedirect()) {
+            if ($this->debugbar->getHttpDriver()->isSessionStarted()) {
+                $this->debugbar->stackData();
+            }
             return false;
         }
 
-        if ($this->app->response->isRedirect()) {
+        $content_type = $this->app->response->header('Content-Type');
+        if ($content_type !== 'text/html') {
             return false;
         }
 
