@@ -25,12 +25,8 @@ class SlimRouteCollector extends ConfigCollector
 
     public function getRouteInfo()
     {
+        // if slim.after.router fired, route is not null
         $route = $this->slim->router->getCurrentRoute();
-        if (is_null($route)) {
-            return [
-                'name' => 'no matched route'
-            ];
-        }
         $method = $this->slim->request->getMethod();
         $path = $this->slim->request->getPathInfo();
         $uri = $method . ' ' . $path;
