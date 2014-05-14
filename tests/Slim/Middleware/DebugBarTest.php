@@ -44,7 +44,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($this->debugbar->isModifiable());
     }
 
-    public function test_isModifiable_call_stackData_when_redirec_and_session_started()
+    public function test_isModifiable_call_stackData_when_redirect_and_session_started()
     {
         $this->slim->response->redirect('hoge');
         $mock_debugbar = $this->getDebugBarMock($isSessionStarted = true);
