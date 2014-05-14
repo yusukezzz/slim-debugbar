@@ -80,7 +80,7 @@ class DebugBar extends Middleware
         }
 
         $content_type = $this->app->response->header('Content-Type');
-        if ($content_type !== 'text/html') {
+        if (stripos($content_type, 'html') === false) {
             return false;
         }
 

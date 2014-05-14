@@ -39,24 +39,18 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
     public function test_isModifiable_return_false_when_redirect()
     {
         $this->slim->response->redirect('hoge');
-        $httpDriver = $this->getMockBuilder('\\DebugBar\\PhpHttpDriver')->setMethods(['isSessionStarted'])->getMock();
-        $httpDriver->expects($this->any())->method('isSessionStarted')->willReturn(false);
-        $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')->getMock();
-        $debugbar->expects($this->any())->method('getHttpDriver')->willReturn($httpDriver);
-        $this->debugbar->setDebugBar($debugbar);
+        $mock_debugbar = $this->getDebugBarMock($isSessionStarted = false);
+        $this->debugbar->setDebugBar($mock_debugbar);
         $this->assertFalse($this->debugbar->isModifiable());
     }
 
     public function test_isModifiable_call_stackData_when_redirec_and_session_started()
     {
-      $this->slim->response->redirect('hoge');
-      $httpDriver = $this->getMockBuilder('\\DebugBar\\PhpHttpDriver')->setMethods(['isSessionStarted'])->getMock();
-      $httpDriver->expects($this->any())->method('isSessionStarted')->willReturn(true);
-      $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')->getMock();
-      $debugbar->expects($this->any())->method('getHttpDriver')->willReturn($httpDriver);
-      $debugbar->expects($this->once())->method('stackData');
-      $this->debugbar->setDebugBar($debugbar);
-      $this->assertFalse($this->debugbar->isModifiable());
+        $this->slim->response->redirect('hoge');
+        $mock_debugbar = $this->getDebugBarMock($isSessionStarted = true);
+        $mock_debugbar->expects($this->once())->method('stackData');
+        $this->debugbar->setDebugBar($mock_debugbar);
+        $this->assertFalse($this->debugbar->isModifiable());
     }
 
     public function test_modifyResponse_append_end_of_text_when_plain_text()
@@ -64,7 +58,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = 'hoge';
         $res = $this->debugbar->modifyResponse($html);
-        $pattern = '#' . $html . preg_quote($this->debugbar->getDebugHtml(), '#').'#';
+        $pattern = '#' . $html . preg_quote($this->debugbar->getDebugHtml(), '#') . '#';
         $this->assertRegExp($pattern, $res);
     }
 
@@ -73,7 +67,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = '</body>';
         $res = $this->debugbar->modifyResponse($html);
-        $pattern = '#' . preg_quote($this->debugbar->getDebugHtml(), '#') . $html.'#';
+        $pattern = '#' . preg_quote($this->debugbar->getDebugHtml(), '#') . $html . '#';
         $this->assertRegExp($pattern, $res);
     }
 
@@ -101,6 +95,23 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertSame('image/png', $slim->response->header('Content-Type'));
     }
 
+    /**
+     * @param $isSessionStarted bool
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getDebugBarMock($isSessionStarted)
+    {
+        $httpDriver = $this->getMockBuilder('\\DebugBar\\PhpHttpDriver')->setMethods(['isSessionStarted'])->getMock();
+        $httpDriver->expects($this->any())->method('isSessionStarted')->willReturn($isSessionStarted);
+        $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')->getMock();
+        $debugbar->expects($this->any())->method('getHttpDriver')->willReturn($httpDriver);
+        return $debugbar;
+    }
+
+    /**
+     * @param $path string
+     * @return \Slim\Slim
+     */
     public function dispatch($path)
     {
         \Slim\Environment::mock(array(
