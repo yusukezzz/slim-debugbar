@@ -3,6 +3,8 @@
 
 This middleware append [PHP Debug Bar](http://phpdebugbar.com/) to Slim response.
 
+Inspired by [Laravel 4 DebugBar](https://github.com/barryvdh/laravel-debugbar)
+
 ![Screenshot](https://dl.dropboxusercontent.com/u/203881/2014-05-14_23.18.17.png)
 
 ### Custom Collectors
@@ -13,14 +15,14 @@ This middleware append [PHP Debug Bar](http://phpdebugbar.com/) to Slim response
   * SlimResponseCollector (collect response headers and cookies)
 
 ### DebugBar Default Collectors
- 
+
   * SlimCollector
   * PhpInfoCollector
   * ConfigCollector
   * RequestDataCollector
   * TimeDataCollector
   * MemoryCollector
-  
+
 
 ### Install
 
@@ -30,17 +32,19 @@ Require this package in your composer.json
 
 sample
 
-    <?php
-    require '/path/to/vendor/autoload.php';
-    $slim = new \Slim\Slim();
-    $slim->add(new \Slim\Middleware\DebugBar());
-    $slim->get('/', function()
-    {
-        echo 'Hello world!';
-    });
-    $slim->run();
+```php
+<?php
+require '/path/to/vendor/autoload.php';
+$slim = new \Slim\Slim();
+$slim->add(new \Slim\Middleware\DebugBar());
+$slim->get('/', function()
+{
+    echo 'Hello world!';
+});
+$slim->run();
+```
 
-### Misc
+### Notice
 
   * Redirection data stack
       - support PHP native session only (session_start() required)
@@ -50,6 +54,47 @@ sample
           + for fontawesome files
       - /_debugbar/resources/:file
           + for css, javascript, images
+
+#### Custom Session Manager example
+
+```php
+require '/path/to/vendor/autoload.php';
+class MyHttpDriver implements \DebugBar\HttpDriverInterface
+{
+    protected $session;
+    protected $response;
+    public function __construct(YourSessionManager $session, \Slim\Http\Response $response)
+    {
+        $this->session = $session;
+        $this->response = $response;
+    }
+    public function setHeaders(array $headers)
+    {
+        foreach ($headers as $key => $val) {
+            $this->response->header($key, $val);
+        }
+    }
+    public function isSessionStarted()
+    {
+        return $this->session->isStarted();
+    }
+    // You should implement other methods too
+}
+$slim = new \Slim\Slim();
+$session = new YourSessionManager();
+$driver = new MyHttpDriver($session, $slim->response);
+$debugbar = new \Slim\Middleware\DebugBar($driver);
+$slim->add($debugbar);
+$slim->get('/', function()
+{
+    echo 'Hello world!';
+});
+$slim->get('/redirect', function() use ($slim)
+{
+    $slim->response->redirect('/');
+});
+$slim->run();
+```
 
 ## License
 
