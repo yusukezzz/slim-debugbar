@@ -16,10 +16,7 @@ class SlimEnvCollector extends DataCollector implements Renderable
 
     public function collect()
     {
-        return [
-            'version' => Slim::VERSION,
-            'mode' => $this->slim->getMode(),
-        ];
+        return $this->slim->getMode();
     }
 
     public function getName()
@@ -29,17 +26,13 @@ class SlimEnvCollector extends DataCollector implements Renderable
 
     public function getWidgets()
     {
+        $slim_version = Slim::VERSION;
+        $php_version = PHP_VERSION;
         return [
-            'version' => [
-                'icon' => 'info',
-                'tooltip' => 'Slim version',
-                'map' => 'slim.version',
-                'default' => '',
-            ],
             'mode' => [
-                'icon' => 'desktop',
-                'tooltip' => 'Slim mode',
-                'map' => 'slim.mode',
+                'icon' => 'info',
+                'tooltip' => "Slim {$slim_version} | PHP {$php_version}",
+                'map' => 'slim',
                 'default' => '',
             ]
         ];

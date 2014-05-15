@@ -1,16 +1,15 @@
 <?php namespace DebugBar;
 
-use DebugBar\DataCollector\SlimResponseCollector;
 use Slim\Slim;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\MemoryCollector;
-use DebugBar\DataCollector\PhpVersionCollector;
 use DebugBar\DataCollector\RequestDataCollector;
+use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DataCollector\SlimEnvCollector;
 use DebugBar\DataCollector\SlimLogCollector;
+use DebugBar\DataCollector\SlimResponseCollector;
 use DebugBar\DataCollector\SlimRouteCollector;
 use DebugBar\DataCollector\SlimViewCollector;
-use DebugBar\DataCollector\TimeDataCollector;
 
 class SlimDebugBar extends DebugBar
 {
@@ -32,7 +31,6 @@ class SlimDebugBar extends DebugBar
             $this->addCollector(new SlimRouteCollector($slim));
         });
 
-        $this->addCollector(new PhpVersionCollector());
         $this->addCollector(new TimeDataCollector());
         $this->addCollector(new RequestDataCollector());
         $this->addCollector(new MemoryCollector());
