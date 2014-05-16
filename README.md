@@ -29,7 +29,7 @@ Inspired by [Laravel 4 DebugBar](https://github.com/barryvdh/laravel-debugbar)
 
 Require this package in your composer.json
 
-    "yusukezzz/slim-debugbar": "dev-master"
+    "yusukezzz/slim-debugbar": "1.*"
 
 sample
 
