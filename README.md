@@ -1,4 +1,5 @@
 ## Slim DebugBar
+[![Latest Stable Version](https://poser.pugx.org/yusukezzz/slim-debugbar/v/stable.png)](https://packagist.org/packages/yusukezzz/slim-debugbar)
 [![Build Status](https://travis-ci.org/yusukezzz/slim-debugbar.svg?branch=master)](https://travis-ci.org/yusukezzz/slim-debugbar)
 
 This middleware append [PHP Debug Bar](http://phpdebugbar.com/) to Slim response.
@@ -58,6 +59,7 @@ $slim->run();
 #### Custom Session Manager example
 
 ```php
+<?php
 require '/path/to/vendor/autoload.php';
 class MyHttpDriver implements \DebugBar\HttpDriverInterface
 {
@@ -81,8 +83,11 @@ class MyHttpDriver implements \DebugBar\HttpDriverInterface
     // You should implement other methods too
 }
 $slim = new \Slim\Slim();
-$session = new YourSessionManager();
-$driver = new MyHttpDriver($session, $slim->response);
+$slim->container->singleton('session', function()
+{
+    return new YourSessionManager();
+});
+$driver = new MyHttpDriver($slim->session, $slim->response);
 $debugbar = new \Slim\Middleware\DebugBar($driver);
 $slim->add($debugbar);
 $slim->get('/', function()
