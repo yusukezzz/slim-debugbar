@@ -30,6 +30,7 @@ class DebugBar extends Middleware
     public function __construct(HttpDriverInterface $HttpDriver = null)
     {
         $this->httpDriver = $HttpDriver;
+        $this->debugbar = new SlimDebugBar();
     }
 
     /**
@@ -51,12 +52,7 @@ class DebugBar extends Middleware
 
     public function call()
     {
-        // add debugbar to Slim IoC container
-        $this->app->container->singleton('debugbar', function()
-        {
-            return new SlimDebugBar($this->app);
-        });
-        $this->debugbar = $this->app->debugbar;
+        $this->prepareDebugBar();
         if ( ! is_null($this->httpDriver)) $this->debugbar->setHttpDriver($this->httpDriver);
         $this->setAssetsRoute();
 
@@ -117,6 +113,13 @@ class DebugBar extends Middleware
     public function getJsHtml()
     {
         return '<script type="text/javascript" src="/_debugbar/resources/dump.js"></script>';
+    }
+
+    protected function prepareDebugBar()
+    {
+        $this->debugbar->initCollectors($this->app);
+        // add debugbar to Slim IoC container
+        $this->app->container->set('debugbar', $this->debugbar);
     }
 
     protected function setAssetsRoute()

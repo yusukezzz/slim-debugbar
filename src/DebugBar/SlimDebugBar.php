@@ -13,7 +13,7 @@ use DebugBar\DataCollector\SlimViewCollector;
 
 class SlimDebugBar extends DebugBar
 {
-    public function __construct(Slim $slim)
+    public function initCollectors(Slim $slim)
     {
         $this->addCollector(new SlimLogCollector($slim));
         $this->addCollector(new SlimEnvCollector($slim));

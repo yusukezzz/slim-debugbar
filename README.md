@@ -37,7 +37,12 @@ sample
 <?php
 require '/path/to/vendor/autoload.php';
 $slim = new \Slim\Slim();
-$slim->add(new \Slim\Middleware\DebugBar());
+$debugbar = new \Slim\Middleware\DebugBar();
+// you can add custom collectors
+//  $debugbar->addCollector(new MyCustomCollector());
+// or use custom debugbar
+//  $debugbar->setDebugBar(new MyCustomDebugBar());
+$slim->add($debugbar);
 $slim->get('/', function()
 {
     echo 'Hello world!';
