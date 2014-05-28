@@ -13,27 +13,26 @@ use DebugBar\DataCollector\SlimViewCollector;
 
 class SlimDebugBar extends DebugBar
 {
+    public function __construct()
+    {
+        $this->addCollector(new TimeDataCollector());
+        $this->addCollector(new RequestDataCollector());
+        $this->addCollector(new MemoryCollector());
+    }
+
     public function initCollectors(Slim $slim)
     {
         $this->addCollector(new SlimLogCollector($slim));
         $this->addCollector(new SlimEnvCollector($slim));
         $slim->hook('slim.after.router', function() use ($slim)
         {
-            // collect response information
-            $this->addCollector(new SlimResponseCollector($slim->response));
-            // collect latest settings
             $setting = $this->prepareRenderData($slim->container['settings']);
-            $this->addCollector(new ConfigCollector($setting));
-            // collect view variables
             $data = $this->prepareRenderData($slim->view->all());
+            $this->addCollector(new SlimResponseCollector($slim->response));
+            $this->addCollector(new ConfigCollector($setting));
             $this->addCollector(new SlimViewCollector($data));
-            // collect route information
             $this->addCollector(new SlimRouteCollector($slim));
         });
-
-        $this->addCollector(new TimeDataCollector());
-        $this->addCollector(new RequestDataCollector());
-        $this->addCollector(new MemoryCollector());
     }
 
     protected function prepareRenderData(array $data = [])

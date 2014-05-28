@@ -43,6 +43,14 @@ class DebugBar extends Middleware
     }
 
     /**
+     * @return SlimDebugBar
+     */
+    public function getDebugBar()
+    {
+        return $this->debugbar;
+    }
+
+    /**
      * @param \DebugBar\DebugBar $debugbar
      */
     public function setDebugBar(\DebugBar\DebugBar $debugbar)
