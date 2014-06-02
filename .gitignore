@@ -2,6 +2,7 @@ app/storage/views/*
 /vendor
 /public
 composer.phar
+composer.lock
 
 # Numerous always-ignore extensions
 *.diff
