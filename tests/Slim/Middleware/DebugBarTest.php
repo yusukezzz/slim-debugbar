@@ -95,6 +95,38 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertSame('image/png', $slim->response->header('Content-Type'));
     }
 
+    public function test_prepareDebugBar_initialize_when_set_SlimDebugBar_instance()
+    {
+        $debugbar = $this->getMockBuilder('\\DebugBar\\SlimDebugBar')
+            ->setMethods(['initCollectors'])->getMock();
+        $debugbar->expects($this->once())->method('initCollectors');
+        $this->debugbar->setDebugBar($debugbar);
+        \Slim\Environment::mock(array(
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+            'PATH_INFO' => '/_debugbar/resources/icons.png',
+        ));
+        $slim = new \Slim\Slim();
+        $slim->add($this->debugbar);
+        $slim->run();
+        $this->assertSame(200, $this->slim->response->getStatus());
+    }
+
+    public function test_prepareDebugBar_not_initialize_when_not_set_SlimDebugBar_instance()
+    {
+        $debugbar = $this->getMockBuilder('\\DebugBar\\DebugBar')
+            ->setMethods(['initCollectors'])->getMock();
+        $debugbar->expects($this->never())->method('initCollectors');
+        $this->debugbar->setDebugBar($debugbar);
+        \Slim\Environment::mock(array(
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+            'PATH_INFO' => '/_debugbar/resources/icons.png',
+        ));
+        $slim = new \Slim\Slim();
+        $slim->add($this->debugbar);
+        $slim->run();
+        $this->assertSame(200, $this->slim->response->getStatus());
+    }
+
     /**
      * @param $isSessionStarted bool
      * @return \PHPUnit_Framework_MockObject_MockObject

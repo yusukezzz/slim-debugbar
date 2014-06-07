@@ -125,7 +125,9 @@ class DebugBar extends Middleware
 
     protected function prepareDebugBar()
     {
-        $this->debugbar->initCollectors($this->app);
+        if ($this->debugbar instanceof SlimDebugBar) {
+            $this->debugbar->initCollectors($this->app);
+        }
         // add debugbar to Slim IoC container
         $this->app->container->set('debugbar', $this->debugbar);
     }
