@@ -83,12 +83,18 @@ class DebugBar extends Middleware
             return false;
         }
 
-        $content_type = $this->app->response->header('Content-Type');
-        if (stripos($content_type, 'html') === false) {
+        if ( ! $this->isHtmlResponse()) {
             return false;
         }
 
         return true;
+    }
+
+    public function isHtmlResponse()
+    {
+        $content_type = $this->app->response->header('Content-Type');
+
+        return (stripos($content_type, 'html') !== false);
     }
 
     /**
@@ -104,23 +110,37 @@ class DebugBar extends Middleware
         } else {
             $html = mb_substr($html, 0, $pos) . $debug_html . mb_substr($html, $pos);
         }
+
         return $html;
     }
 
     public function getDebugHtml()
     {
         $renderer = $this->debugbar->getJavascriptRenderer();
-        return implode("\n", [$this->getCssHtml(), $this->getJsHtml(), $renderer->render()]);
+        $renderable = true;
+        if ($this->app->request->isAjax() && $this->isHtmlResponse()) {
+            $renderable = false;
+        }
+
+        return implode("\n", [$this->getAssetsHtml($renderable), $renderer->render($renderable)]);
+    }
+
+    public function getAssetsHtml($renderable)
+    {
+        if ( ! $renderable) {
+            return;
+        }
+
+        return '<script type="text/javascript" src="/_debugbar/resources/dump.js"></script>' .
+            '<link rel="stylesheet" type="text/css" href="/_debugbar/resources/dump.css">';
     }
 
     public function getCssHtml()
     {
-        return '<link rel="stylesheet" type="text/css" href="/_debugbar/resources/dump.css">';
     }
 
     public function getJsHtml()
     {
-        return '<script type="text/javascript" src="/_debugbar/resources/dump.js"></script>';
     }
 
     protected function prepareDebugBar()

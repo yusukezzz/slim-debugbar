@@ -55,6 +55,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_modifyResponse_append_end_of_text_when_plain_text()
     {
+        \Slim\Environment::mock(array(
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+        ));
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = 'hoge';
         $res = $this->debugbar->modifyResponse($html);
@@ -64,6 +67,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_modifyResponse_append_before_body_end_tag_when_html()
     {
+        \Slim\Environment::mock(array(
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+        ));
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = '</body>';
         $res = $this->debugbar->modifyResponse($html);
