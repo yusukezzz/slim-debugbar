@@ -32,6 +32,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_isModifiable_return_false_when_not_html_response()
     {
+        \Slim\Environment::mock(array(
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+        ));
         $this->slim->response->header('Content-Type', 'image/png');
         $this->assertFalse($this->debugbar->isModifiable());
     }
@@ -153,9 +156,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
     public function dispatch($path)
     {
         \Slim\Environment::mock(array(
-                'REQUEST_METHOD' => 'HEAD', // ignore console output
-                'PATH_INFO' => $path,
-            ));
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+            'PATH_INFO' => $path,
+        ));
         $slim = new \Slim\Slim();
         $slim->add($this->debugbar);
         $slim->run();

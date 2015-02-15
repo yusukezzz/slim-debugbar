@@ -3,7 +3,9 @@
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\HttpDriverInterface;
+use DebugBar\OpenHandler;
 use DebugBar\SlimDebugBar;
+use DebugBar\Storage\FileStorage;
 use Slim\Middleware;
 
 class DebugBar extends Middleware
@@ -66,6 +68,15 @@ class DebugBar extends Middleware
 
         $this->next->call();
 
+        if ($this->isAssetsRoute()) {
+            return;
+        }
+
+        if ($this->app->request->isAjax()) {
+            $this->debugbar->sendDataInHeaders($useOpenHandler = true);
+            return;
+        }
+
         if ( ! $this->isModifiable()) {
             return;
         }
@@ -117,36 +128,28 @@ class DebugBar extends Middleware
     public function getDebugHtml()
     {
         $renderer = $this->debugbar->getJavascriptRenderer();
-        $renderable = true;
-        if ($this->app->request->isAjax() && $this->isHtmlResponse()) {
-            $renderable = false;
+        if ($this->debugbar->getStorage()) {
+            $renderer->setOpenHandlerUrl($this->app->router->urlFor('debugbar.openhandler'));
         }
 
-        return implode("\n", [$this->getAssetsHtml($renderable), $renderer->render($renderable)]);
+        return $this->getAssetsHtml() . "\n" . $renderer->render();
     }
 
-    public function getAssetsHtml($renderable)
+    public function getAssetsHtml()
     {
-        if ( ! $renderable) {
-            return;
-        }
-
         return '<script type="text/javascript" src="/_debugbar/resources/dump.js"></script>' .
             '<link rel="stylesheet" type="text/css" href="/_debugbar/resources/dump.css">';
-    }
-
-    public function getCssHtml()
-    {
-    }
-
-    public function getJsHtml()
-    {
     }
 
     protected function prepareDebugBar()
     {
         if ($this->debugbar instanceof SlimDebugBar) {
             $this->debugbar->initCollectors($this->app);
+        }
+        $path = $this->app->config('debugbar.storage.path');
+        if ($path) {
+            $storage = new FileStorage($path);
+            $this->debugbar->setStorage($storage);
         }
         // add debugbar to Slim IoC container
         $this->app->container->set('debugbar', $this->debugbar);
@@ -163,7 +166,7 @@ class DebugBar extends Middleware
             $path = $renderer->getBasePath() . '/vendor/font-awesome/fonts/' . $file;
             $this->app->response->header('Content-Type', (new \finfo(FILEINFO_MIME))->file($path));
             echo file_get_contents($path);
-        });
+        })->name('debugbar.fonts');
         $this->app->get('/_debugbar/resources/:file', function($file) use ($renderer)
         {
             $files = explode('.', $file);
@@ -179,6 +182,25 @@ class DebugBar extends Middleware
                 $path = $renderer->getBasePath() . '/' .$file;
                 echo file_get_contents($path);
             }
-        });
+        })->name('debugbar.resources');
+        $this->app->get('/_debugbar/openhandler', function()
+        {
+            $openHandler = new OpenHandler($this->debugbar);
+            $data = $openHandler->handle($request = null, $echo = false, $sendHeader = false);
+            $this->app->response->header('Content-Type', 'application/json');
+            $this->app->response->setBody($data);
+        })->name('debugbar.openhandler');
+    }
+
+    protected function isAssetsRoute()
+    {
+        $route = $this->app->router->getCurrentRoute();
+
+        if ($route) {
+            $name = $route->getName();
+            return (explode('.', $name)[0] === 'debugbar');
+        }
+
+        return false;
     }
 }
