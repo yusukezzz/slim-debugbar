@@ -138,7 +138,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $slim->get('/hoge', function(){ echo 'hoge'; });
         $slim->run();
         $files = glob($this->storage_path . '/*.json', GLOB_MARK);
-        $this->assertNotNull($files[0]);
+        $this->assertNotEmpty($files[0]);
     }
 
     public function test_open_handler_dont_save_data_when_ajax_without_storage_config()
