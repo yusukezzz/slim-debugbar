@@ -1,4 +1,4 @@
-app/storage/views/*
+/tests/Slim/Middleware/storage
 /vendor
 /public
 composer.phar
