@@ -125,10 +125,11 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertSame('application/json', $slim->response->header('Content-Type'));
     }
 
-    public function test_open_handler_save_data()
+    public function test_open_handler_save_data_when_ajax_with_storage_config()
     {
         $this->assertFalse(is_dir($this->storage_path));
         \Slim\Environment::mock([
+            'X_REQUESTED_WITH' => 'XMLHttpRequest', // ajax request
             'REQUEST_METHOD' => 'HEAD', // ignore console output
             'PATH_INFO' => '/hoge',
         ]);
@@ -138,6 +139,22 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $slim->run();
         $files = glob($this->storage_path . '/*.json', GLOB_MARK);
         $this->assertNotNull($files[0]);
+    }
+
+    public function test_open_handler_dont_save_data_when_ajax_without_storage_config()
+    {
+        $this->assertFalse(is_dir($this->storage_path));
+        \Slim\Environment::mock([
+            'X_REQUESTED_WITH' => 'XMLHttpRequest', // ajax request
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+            'PATH_INFO' => '/hoge',
+        ]);
+        $slim = new \Slim\Slim();
+        $slim->add($this->debugbar);
+        $slim->get('/hoge', function(){ echo 'hoge'; });
+        $slim->run();
+        $files = glob($this->storage_path . '/*.json', GLOB_MARK);
+        $this->assertEmpty($files);
     }
 
     public function test_open_handler_route_dont_save_data()

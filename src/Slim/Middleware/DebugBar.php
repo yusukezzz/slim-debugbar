@@ -4,6 +4,7 @@ use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\HttpDriverInterface;
 use DebugBar\OpenHandler;
 use DebugBar\SlimDebugBar;
+use DebugBar\SlimHttpDriver;
 use DebugBar\Storage\FileStorage;
 use DebugBar\Storage\StorageInterface;
 use Slim\Middleware;
@@ -63,7 +64,10 @@ class DebugBar extends Middleware
     public function call()
     {
         $this->prepareDebugBar();
-        if ( ! is_null($this->httpDriver)) $this->debugbar->setHttpDriver($this->httpDriver);
+
+        $httpDriver = $this->httpDriver ?: new SlimHttpDriver($this->app);
+        $this->debugbar->setHttpDriver($httpDriver);
+
         $this->setAssetsRoute();
 
         $this->next->call();
@@ -73,7 +77,9 @@ class DebugBar extends Middleware
         }
 
         if ($this->app->request->isAjax()) {
-            $this->debugbar->sendDataInHeaders($useOpenHandler = true);
+            if ($this->debugbar->getStorage()) {
+                $this->debugbar->sendDataInHeaders($useOpenHandler = true);
+            }
             return;
         }
 
