@@ -117,12 +117,6 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertSame('text/javascript', $slim->response->header('Content-Type'));
     }
 
-    public function test_image_asset_route()
-    {
-        $slim = $this->dispatch('/_debugbar/resources/icons.png');
-        $this->assertSame('image/png', $slim->response->header('Content-Type'));
-    }
-
     public function test_open_handler_route()
     {
         mkdir($this->storage_path);

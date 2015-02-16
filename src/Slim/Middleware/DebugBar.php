@@ -176,10 +176,6 @@ class DebugBar extends Middleware
             } elseif ($ext === 'js') {
                 $this->app->response->header('Content-Type', 'text/javascript');
                 $renderer->dumpJsAssets();
-            } else {
-                $this->app->response->header('Content-Type', 'image/png');
-                $path = $renderer->getBasePath() . '/' .$file;
-                echo file_get_contents($path);
             }
         })->name('debugbar.resources');
         $this->app->get('/_debugbar/openhandler', function()
