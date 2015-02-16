@@ -5,6 +5,7 @@ use DebugBar\HttpDriverInterface;
 use DebugBar\OpenHandler;
 use DebugBar\SlimDebugBar;
 use DebugBar\Storage\FileStorage;
+use DebugBar\Storage\StorageInterface;
 use Slim\Middleware;
 
 class DebugBar extends Middleware
@@ -145,9 +146,8 @@ class DebugBar extends Middleware
         if ($this->debugbar instanceof SlimDebugBar) {
             $this->debugbar->initCollectors($this->app);
         }
-        $path = $this->app->config('debugbar.storage.path');
-        if ($path) {
-            $storage = new FileStorage($path);
+        $storage = $this->app->config('debugbar.storage');
+        if ($storage instanceof StorageInterface) {
             $this->debugbar->setStorage($storage);
         }
         // add debugbar to Slim IoC container

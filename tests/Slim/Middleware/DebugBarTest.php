@@ -3,11 +3,6 @@
 class DebugBarTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var string
-     */
-    const STORAGE_PATH = './storage';
-
-    /**
      * @var \Slim\Slim
      */
     protected $slim;
@@ -17,8 +12,14 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
      */
     protected $debugbar;
 
+    /**
+     * @var string
+     */
+    protected $storage_path;
+
     public function setUp()
     {
+        $this->storage_path = __DIR__ . '/storage';
         $this->cleanupStorage();
         $this->slim = new \Slim\Slim();
         $this->debugbar = new \Slim\Middleware\DebugBar();
@@ -34,12 +35,12 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     protected function cleanupStorage()
     {
-        if (is_dir(self::STORAGE_PATH)) {
-            $files = glob(self::STORAGE_PATH . '/*', GLOB_MARK);
+        if (is_dir($this->storage_path)) {
+            $files = glob($this->storage_path . '/*', GLOB_MARK);
             foreach ($files as $file) {
                 unlink($file);
             }
-            rmdir(self::STORAGE_PATH);
+            rmdir($this->storage_path);
         }
     }
 
@@ -124,35 +125,36 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_open_handler_route()
     {
-        mkdir(self::STORAGE_PATH);
-        $config = ['debugbar.storage.path' => self::STORAGE_PATH];
+        mkdir($this->storage_path);
+        die;
+        $config = ['debugbar.storage' => new \DebugBar\Storage\FileStorage($this->storage_path)];
         $slim = $this->dispatch('/_debugbar/openhandler', $config);
         $this->assertSame('application/json', $slim->response->header('Content-Type'));
     }
 
     public function test_open_handler_save_data()
     {
-        $this->assertFalse(is_dir(self::STORAGE_PATH));
+        $this->assertFalse(is_dir($this->storage_path));
         \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
             'PATH_INFO' => '/hoge',
         ]);
-        $slim = new \Slim\Slim(['debugbar.storage.path' => self::STORAGE_PATH]);
+        $slim = new \Slim\Slim(['debugbar.storage' => new \DebugBar\Storage\FileStorage($this->storage_path)]);
         $slim->add($this->debugbar);
         $slim->get('/hoge', function(){ echo 'hoge'; });
         $slim->run();
-        $files = glob(self::STORAGE_PATH . '/*.json', GLOB_MARK);
+        $files = glob($this->storage_path . '/*.json', GLOB_MARK);
         $this->assertNotNull($files[0]);
     }
 
     public function test_open_handler_route_dont_save_data()
     {
-        mkdir(self::STORAGE_PATH);
+        mkdir($this->storage_path);
         $path = '/_debugbar/openhandler';
-        $config = ['debugbar.storage.path' => self::STORAGE_PATH];
+        $config = ['debugbar.storage' => new \DebugBar\Storage\FileStorage($this->storage_path)];
         $slim = $this->dispatch($path, $config);
         $this->assertSame(200, $slim->response->getStatus());
-        $files = glob(self::STORAGE_PATH . '/*.json', GLOB_MARK);
+        $files = glob($this->storage_path . '/*.json', GLOB_MARK);
         $this->assertEmpty($files);
     }
 
