@@ -1,6 +1,5 @@
 <?php namespace Slim\Middleware;
 
-use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\HttpDriverInterface;
 use DebugBar\OpenHandler;

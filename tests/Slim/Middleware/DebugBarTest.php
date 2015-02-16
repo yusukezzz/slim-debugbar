@@ -3,6 +3,11 @@
 class DebugBarTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var string
+     */
+    const STORAGE_PATH = './storage';
+
+    /**
      * @var \Slim\Slim
      */
     protected $slim;
@@ -14,6 +19,7 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $this->cleanupStorage();
         $this->slim = new \Slim\Slim();
         $this->debugbar = new \Slim\Middleware\DebugBar();
         $this->debugbar->setApplication($this->slim);
@@ -23,6 +29,18 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
     {
         $this->slim = null;
         $this->debugbar = null;
+        $this->cleanupStorage();
+    }
+
+    protected function cleanupStorage()
+    {
+        if (is_dir(self::STORAGE_PATH)) {
+            $files = glob(self::STORAGE_PATH . '/*', GLOB_MARK);
+            foreach ($files as $file) {
+                unlink($file);
+            }
+            rmdir(self::STORAGE_PATH);
+        }
     }
 
     public function test_isModifiable()
@@ -32,9 +50,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_isModifiable_return_false_when_not_html_response()
     {
-        \Slim\Environment::mock(array(
+        \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
-        ));
+        ]);
         $this->slim->response->header('Content-Type', 'image/png');
         $this->assertFalse($this->debugbar->isModifiable());
     }
@@ -58,9 +76,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_modifyResponse_append_end_of_text_when_plain_text()
     {
-        \Slim\Environment::mock(array(
+        \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
-        ));
+        ]);
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = 'hoge';
         $res = $this->debugbar->modifyResponse($html);
@@ -70,9 +88,9 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     public function test_modifyResponse_append_before_body_end_tag_when_html()
     {
-        \Slim\Environment::mock(array(
+        \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
-        ));
+        ]);
         $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
         $html = '</body>';
         $res = $this->debugbar->modifyResponse($html);
@@ -104,16 +122,50 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertSame('image/png', $slim->response->header('Content-Type'));
     }
 
+    public function test_open_handler_route()
+    {
+        mkdir(self::STORAGE_PATH);
+        $config = ['debugbar.storage.path' => self::STORAGE_PATH];
+        $slim = $this->dispatch('/_debugbar/openhandler', $config);
+        $this->assertSame('application/json', $slim->response->header('Content-Type'));
+    }
+
+    public function test_open_handler_save_data()
+    {
+        $this->assertFalse(is_dir(self::STORAGE_PATH));
+        \Slim\Environment::mock([
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+            'PATH_INFO' => '/hoge',
+        ]);
+        $slim = new \Slim\Slim(['debugbar.storage.path' => self::STORAGE_PATH]);
+        $slim->add($this->debugbar);
+        $slim->get('/hoge', function(){ echo 'hoge'; });
+        $slim->run();
+        $files = glob(self::STORAGE_PATH . '/*.json', GLOB_MARK);
+        $this->assertNotNull($files[0]);
+    }
+
+    public function test_open_handler_route_dont_save_data()
+    {
+        mkdir(self::STORAGE_PATH);
+        $path = '/_debugbar/openhandler';
+        $config = ['debugbar.storage.path' => self::STORAGE_PATH];
+        $slim = $this->dispatch($path, $config);
+        $this->assertSame(200, $slim->response->getStatus());
+        $files = glob(self::STORAGE_PATH . '/*.json', GLOB_MARK);
+        $this->assertEmpty($files);
+    }
+
     public function test_prepareDebugBar_initialize_when_set_SlimDebugBar_instance()
     {
         $debugbar = $this->getMockBuilder('\\DebugBar\\SlimDebugBar')
             ->setMethods(['initCollectors'])->getMock();
         $debugbar->expects($this->once())->method('initCollectors');
         $this->debugbar->setDebugBar($debugbar);
-        \Slim\Environment::mock(array(
+        \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
             'PATH_INFO' => '/_debugbar/resources/icons.png',
-        ));
+        ]);
         $slim = new \Slim\Slim();
         $slim->add($this->debugbar);
         $slim->run();
@@ -126,10 +178,10 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
             ->setMethods(['initCollectors'])->getMock();
         $debugbar->expects($this->never())->method('initCollectors');
         $this->debugbar->setDebugBar($debugbar);
-        \Slim\Environment::mock(array(
+        \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
             'PATH_INFO' => '/_debugbar/resources/icons.png',
-        ));
+        ]);
         $slim = new \Slim\Slim();
         $slim->add($this->debugbar);
         $slim->run();
@@ -151,15 +203,16 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param $path string
+     * @param $config array
      * @return \Slim\Slim
      */
-    public function dispatch($path)
+    public function dispatch($path, $config = [])
     {
-        \Slim\Environment::mock(array(
+        \Slim\Environment::mock([
             'REQUEST_METHOD' => 'HEAD', // ignore console output
             'PATH_INFO' => $path,
-        ));
-        $slim = new \Slim\Slim();
+        ]);
+        $slim = new \Slim\Slim($config);
         $slim->add($this->debugbar);
         $slim->run();
         return $slim;
