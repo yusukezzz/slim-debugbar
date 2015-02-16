@@ -64,7 +64,9 @@ $slim->run();
       - /_debugbar/fonts/:file
           + for fontawesome files
       - /_debugbar/resources/:file
-          + for css, javascript, images
+          + for css, javascript
+      - /_debugbar/openhandler
+          + for previous sets of collected data
 
 #### Custom Session Manager example
 
