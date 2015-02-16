@@ -126,7 +126,6 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
     public function test_open_handler_route()
     {
         mkdir($this->storage_path);
-        die;
         $config = ['debugbar.storage' => new \DebugBar\Storage\FileStorage($this->storage_path)];
         $slim = $this->dispatch('/_debugbar/openhandler', $config);
         $this->assertSame('application/json', $slim->response->header('Content-Type'));
