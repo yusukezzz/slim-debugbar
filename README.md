@@ -31,12 +31,15 @@ Require this package in your composer.json
 
     "yusukezzz/slim-debugbar": "1.*"
 
-sample
+example
 
 ```php
 <?php
 require '/path/to/vendor/autoload.php';
-$slim = new \Slim\Slim();
+$config = [];
+// if you want to capture ajax requests, set instance of StorageInterface implemented.
+// $config['debugbar.storage'] = new \DebugBar\Storage\FileStorage('/path/to/storage');
+$slim = new \Slim\Slim($config);
 $debugbar = new \Slim\Middleware\DebugBar();
 // you can add custom collectors
 //  $debugbar->addCollector(new MyCustomCollector());
@@ -51,7 +54,9 @@ $slim->run();
 ```
 
 ### Notice
-
+  * Available storage for ajax capturing
+      - Filesystem, PDO and Redis
+      - for more information, please refer to [the official document](http://phpdebugbar.com/docs/storage.html).
   * Redirection data stack
       - support PHP native session only (session_start() required)
       - if you want to use your own session manager, you should implement DebugBar\\HttpDriverInterface.
