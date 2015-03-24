@@ -99,6 +99,19 @@ class DebugBarTest extends PHPUnit_Framework_TestCase
         $this->assertRegExp($pattern, $res);
     }
 
+    public function test_modifyResponse_sub_directory()
+    {
+        \Slim\Environment::mock([
+            'REQUEST_METHOD' => 'HEAD', // ignore console output
+            'SCRIPT_NAME' => '/sub',
+        ]);
+        $this->debugbar->setDebugBar(new \DebugBar\StandardDebugBar());
+        $html = 'hoge';
+        $res = $this->debugbar->modifyResponse($html);
+        $pattern = '#/sub/_debugbar#';
+        $this->assertRegExp($pattern, $res);
+    }
+
     public function test_fonts_asset_route()
     {
         $slim = $this->dispatch('/_debugbar/fonts/fontawesome-webfont.woff?v=4.0.3');
