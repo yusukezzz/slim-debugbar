@@ -143,8 +143,9 @@ class DebugBar extends Middleware
 
     public function getAssetsHtml()
     {
-        return '<script type="text/javascript" src="/_debugbar/resources/dump.js"></script>' .
-            '<link rel="stylesheet" type="text/css" href="/_debugbar/resources/dump.css">';
+        $root = $this->app->request()->getScriptName();
+        return '<script type="text/javascript" src="' . $root . '/_debugbar/resources/dump.js"></script>' .
+            '<link rel="stylesheet" type="text/css" href="' . $root . '/_debugbar/resources/dump.css">';
     }
 
     protected function prepareDebugBar()
