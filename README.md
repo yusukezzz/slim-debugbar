@@ -54,6 +54,8 @@ $slim->run();
 ```
 
 ### Notice
+  * Please use real httpd (apache, nginx etc...)
+      - PHP builtin server does not supported.
   * Available storage for ajax capturing
       - Filesystem, PDO and Redis
       - for more information, please refer to [the official document](http://phpdebugbar.com/docs/storage.html).
