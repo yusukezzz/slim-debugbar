@@ -175,8 +175,14 @@ class DebugBar extends Middleware
             $files = explode('?', $file);
             $file = reset($files);
             $path = $renderer->getBasePath() . '/vendor/font-awesome/fonts/' . $file;
-            $this->app->response->header('Content-Type', (new \finfo(FILEINFO_MIME))->file($path));
-            echo file_get_contents($path);
+            if (file_exists($path)) {
+                $this->app->response->header('Content-Type', (new \finfo(FILEINFO_MIME))->file($path));
+                echo file_get_contents($path);
+            } else {
+                // font-awesome.css referencing fontawesome-webfont.woff2 but not include in the php-debugbar.
+                // It is not slim-debugbar bug.
+                $this->app->notFound();
+            }
         })->name('debugbar.fonts');
         $this->app->get('/_debugbar/resources/:file', function($file) use ($renderer)
         {
