@@ -138,7 +138,12 @@ class DebugBar extends Middleware
             $renderer->setOpenHandlerUrl($this->app->router->urlFor('debugbar.openhandler'));
         }
 
-        return $this->getAssetsHtml() . "\n" . $renderer->render();
+        $html = $this->getAssetsHtml();
+        if ($renderer->isJqueryNoConflictEnabled()) {
+            $html .= "\n" . '<script type="text/javascript">jQuery.noConflict(true);</script>';
+        }
+
+        return $html . "\n" . $renderer->render();
     }
 
     public function getAssetsHtml()
