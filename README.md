@@ -116,8 +116,7 @@ $slim->run();
 ```
 
 ### Q&A
-  * Q. Errors in the browser's console:
-  `Resource interpreted as Font but transferred with MIME type text/html`
+  * Q. Errors in the browser's console: `Resource interpreted as Font but transferred with MIME type text/html`
     - A. Please read [this solution](https://github.com/yusukezzz/slim-debugbar/issues/6#issuecomment-89362616)
 
 ## License
